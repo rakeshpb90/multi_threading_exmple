@@ -1,24 +1,19 @@
 #Python 3.7.7
-import threading, requests, time
+import asyncio, aiohttp, time
 
-def fetch(url):
-    with requests.session().get(url) as response:
-        print(response.json()['uuid'])
+async def fetch(url):
+    async with aiohttp.ClientSession() as session:
+        response = await session.get(url=url)
+        json_res = await response.json()
+        print(json_res['uuid'])
 
-def main():
-		iter_no = 2
-    for _ in range(iter_no):
-        fetch(url)
+async def main():
+    task = [fetch(url) for _ in range(50)]
+    await asyncio.gather(*task)
 
 if __name__ ==  '__main__':
     url = 'https://httpbin.org/uuid'
     ts = time.time()
-    thread_list = []
-		thread_count = 25
-    for i in range(thread_count):
-        thread_list.append(threading.Thread(target=main))
-        thread_list[i].start()
-    for t in thread_list:
-        t.join()
+    asyncio.run(main())
     te = time.time()
     print(' Time taken: {} '.format(te-ts))
