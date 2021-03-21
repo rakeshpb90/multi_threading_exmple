@@ -1,5 +1,6 @@
 from multiprocessing import Process
 import time
+import requests
 
 ####### SINGLE PROCESS
 
